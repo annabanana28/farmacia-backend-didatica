@@ -1,4 +1,5 @@
 import { Produto } from "../model/Produto.js";
+import type { ProdutoDTO } from "../dto/ProdutoDTO.js";
 import type { Request, Response } from "express";
 
 class ProdutoController extends Produto {
@@ -25,7 +26,7 @@ class ProdutoController extends Produto {
 
     static async novo(req: Request, res: Response): Promise<Response> {
         try {
-            const dadosRecebidos = req.body;
+            const dadosRecebidos = req.body as ProdutoDTO;
             const produto = new Produto(
                 dadosRecebidos.descricao,
                 dadosRecebidos.preco,
@@ -34,7 +35,6 @@ class ProdutoController extends Produto {
                 dadosRecebidos.validade
             );
             const respostaModelo = await Produto.cadastrarProduto(produto);
-
             if (respostaModelo) {
                 return res.status(201).json({ mensagem: "Produto cadastrado com sucesso." });
             } else {
@@ -50,14 +50,12 @@ class ProdutoController extends Produto {
         try {
             const idProdutoParam = req.params.idProduto;
             const idProduto = Number(idProdutoParam);
-
             if (isNaN(idProduto)) {
                 return res.status(400).json({ erro: 'ID do produto inválido' });
             }
             const campos = req.body;
             const atualizado = await Produto.atualizarProduto(idProduto, campos);
             console.log(idProduto, campos);
-
             if (atualizado) {
                 return res.status(200).json({ mensagem: "Produto atualizado com sucesso." });
             } else {
@@ -68,6 +66,7 @@ class ProdutoController extends Produto {
             return res.status(500).json({ mensagem: "Erro ao atualizar produto." });
         }
     }
+
 }
 
 export default ProdutoController;
