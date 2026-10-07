@@ -1,4 +1,6 @@
-import { Pedido, type ItemDTO } from "../model/Pedido.js";
+import { Pedido } from "../model/Pedido.js";
+import type { PedidoDTO } from "../dto/PedidoDTO.js";
+import type { ItemPedidoDTO } from "../dto/ItemPedidoDTO.js";
 import type { Request, Response } from "express";
 
 class PedidoController extends Pedido {
@@ -27,7 +29,7 @@ class PedidoController extends Pedido {
 
   static async novo(req: Request, res: Response): Promise<any> {
     try {
-      const { idCliente, itens } = req.body as { idCliente: number; itens: ItemDTO[] };
+      const { idCliente, itens } = req.body as PedidoDTO;
       if (!idCliente || !Array.isArray(itens) || itens.length === 0) {
         return res.status(400).json({ mensagem: "idCliente e itens são obrigatórios." });
       }
@@ -45,7 +47,7 @@ class PedidoController extends Pedido {
   static async novoItem(req: Request, res: Response): Promise<any> {
     try {
       const idVenda = Number(req.params.id);
-      const { idProduto, qtdProduto, precoUnit } = req.body as ItemDTO;
+      const { idProduto, qtdProduto, precoUnit } = req.body as Omit<ItemPedidoDTO, "idVenda">;
       if (!idProduto || !qtdProduto || typeof precoUnit !== "number") {
         return res.status(400).json({ mensagem: "idProduto, qtdProduto e precoUnit são obrigatórios." });
       }
@@ -71,6 +73,7 @@ class PedidoController extends Pedido {
       return res.status(500).json({ mensagem: "Erro ao listar itens do pedido." });
     }
   }
+
 }
 
 export default PedidoController;
